@@ -1,15 +1,12 @@
 #include "Game.hpp"
+#include "TextureManager.hpp"
 
 SDL_Texture* playerTexture;
 SDL_FRect srcR, destR;
 
-Game::Game() {
+Game::Game() {}
 
-}
-
-Game::~Game() {
-
-}
+Game::~Game() {}
 
 void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	// Set flags for creating the window.
@@ -37,12 +34,7 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 		isRunning = false;
 	}
 
-
-	// Create a temporary surface to load into the player texture and destroy it.
-	SDL_Surface* tmpSurface = IMG_Load("assets/dad.png");
-	playerTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-	SDL_SetTextureScaleMode(playerTexture, SDL_SCALEMODE_NEAREST); // Set scale mode to nearest for sharp pixel art.
-	SDL_DestroySurface(tmpSurface);
+	playerTexture = TextureManager::LoadTexture("assets/dad.png", renderer);
 }
 
 void Game::handleEvents() {
@@ -64,7 +56,7 @@ void Game::update() {
 
 	destR.w = 64;
 	destR.h = 64;
-	//destR.x = nCount;
+	destR.x = nCount;
 
 	std::cout << nCount << std::endl;
 }

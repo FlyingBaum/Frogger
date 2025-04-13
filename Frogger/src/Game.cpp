@@ -1,9 +1,14 @@
 #include "Game.hpp"
 #include "TextureManager.hpp"
 #include "GameObject.hpp"
+#include "Map.hpp"
 
 GameObject* player;
 GameObject* car;
+
+Map* map;
+
+SDL_Renderer* Game::renderer = nullptr;
 
 Game::Game() {}
 
@@ -34,8 +39,10 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 		isRunning = false;
 	}
 
-	player = new GameObject("assets/dad.png", renderer, 0, 0);
-	car = new GameObject("assets/car.png", renderer, 50, 50);
+	// Initialize game objects and map.
+	player = new GameObject("assets/dad.png", 0, 0);
+	car = new GameObject("assets/car.png", 50, 50);
+	map = new Map();
 }
 
 void Game::handleEvents() {
@@ -59,8 +66,12 @@ void Game::update() {
 
 void Game::render() {
 	SDL_RenderClear(renderer);								// Clear everything with the render color.
+
+	// Render map first, then the entities.
+	map->DrawMap();
 	player->Render();
 	car->Render();
+
 	SDL_RenderPresent(renderer);							// Present all the newly rendered stuff.
 }
 

@@ -19,11 +19,10 @@ public:
 
 	bool getIsRunning() { return isRunning; }
 
+	static SDL_Renderer* renderer;
+
 private:
 	int nCount = 0;
-
 	bool isRunning;
-
 	SDL_Window* window;
-	SDL_Renderer* renderer;
 };

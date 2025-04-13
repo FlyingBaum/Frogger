@@ -1,13 +1,12 @@
 #include "GameObject.hpp"
 #include "TextureManager.hpp"
 
-GameObject::GameObject(const char* textureSheetPath, SDL_Renderer* ren, int x, int y) {
+GameObject::GameObject(const char* textureSheetPath, int x, int y) {
 	// Set initial position of object.
 	xPos = x;
 	yPos = y;
 
-	renderer = ren;
-	objTexture = TextureManager::LoadTexture(textureSheetPath, ren);
+	objTexture = TextureManager::LoadTexture(textureSheetPath);
 }
 
 void GameObject::Update() {
@@ -28,5 +27,5 @@ void GameObject::Update() {
 }
 
 void GameObject::Render() {
-	SDL_RenderTexture(renderer, objTexture, &srcRect, &destRect);
+	SDL_RenderTexture(Game::renderer, objTexture, &srcRect, &destRect);
 }

@@ -1,15 +1,17 @@
 #include "Game.hpp"
+#include "TextureManager.hpp"
+#include "Map.hpp"
+#include "ECS/Components.hpp"
 
-SDL_Texture* playerTexture;
-SDL_FRect srcR, destR;
+Map* map;
+Manager manager;
 
-Game::Game() {
+SDL_Renderer* Game::renderer = nullptr;
 
-}
+auto& player(manager.addEntity());
 
-Game::~Game() {
-
-}
+Game::Game() {}
+Game::~Game() {}
 
 void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	// Set flags for creating the window.
@@ -27,7 +29,6 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 		renderer = SDL_CreateRenderer(window, NULL);
 		if (renderer) {
 			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-			// TODO: Once SDL3 version 3.40 is out use "SDL_SetDefaultTextureScaleMode" here.
 			std::cout << "Renderer created!" << std::endl;
 		}
 
@@ -37,12 +38,11 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 		isRunning = false;
 	}
 
+	map = new Map();
 
-	// Create a temporary surface to load into the player texture and destroy it.
-	SDL_Surface* tmpSurface = IMG_Load("assets/dad.png");
-	playerTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-	SDL_SetTextureScaleMode(playerTexture, SDL_SCALEMODE_NEAREST); // Set scale mode to nearest for sharp pixel art.
-	SDL_DestroySurface(tmpSurface);
+	// ECS implementation.
+	auto& playerPosition = player.addComponent<PositionComponent>();
+	auto& playerSprite = player.addComponent<SpriteComponent>("assets/dad.png");
 }
 
 void Game::handleEvents() {
@@ -60,18 +60,16 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-	nCount++;
-
-	destR.w = 64;
-	destR.h = 64;
-	//destR.x = nCount;
-
-	std::cout << nCount << std::endl;
+	manager.refresh();
+	manager.update();
 }
 
 void Game::render() {
 	SDL_RenderClear(renderer);								// Clear everything with the render color.
-	SDL_RenderTexture(renderer, playerTexture, NULL, &destR); // Render player.
+
+	// Render map first, then the entities.
+	map->DrawMap();
+	manager.draw();
 	SDL_RenderPresent(renderer);							// Present all the newly rendered stuff.
 }
 

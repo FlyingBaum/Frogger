@@ -1,17 +1,16 @@
 #include "Game.hpp"
 #include "TextureManager.hpp"
-#include "GameObject.hpp"
 #include "Map.hpp"
-
-GameObject* player;
-GameObject* car;
+#include "ECS/Components.hpp"
 
 Map* map;
+Manager manager;
 
 SDL_Renderer* Game::renderer = nullptr;
 
-Game::Game() {}
+auto& player(manager.addEntity());
 
+Game::Game() {}
 Game::~Game() {}
 
 void Game::init(const char* title, int width, int height, bool isFullscreen) {
@@ -39,10 +38,11 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 		isRunning = false;
 	}
 
-	// Initialize game objects and map.
-	player = new GameObject("assets/dad.png", 0, 0);
-	car = new GameObject("assets/car.png", 50, 50);
 	map = new Map();
+
+	// ECS implementation.
+	auto& playerPosition = player.addComponent<PositionComponent>();
+	auto& playerSprite = player.addComponent<SpriteComponent>("assets/dad.png");
 }
 
 void Game::handleEvents() {
@@ -60,8 +60,8 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-	player->Update();
-	car->Update();
+	manager.refresh();
+	manager.update();
 }
 
 void Game::render() {
@@ -69,9 +69,7 @@ void Game::render() {
 
 	// Render map first, then the entities.
 	map->DrawMap();
-	player->Render();
-	car->Render();
-
+	manager.draw();
 	SDL_RenderPresent(renderer);							// Present all the newly rendered stuff.
 }
 

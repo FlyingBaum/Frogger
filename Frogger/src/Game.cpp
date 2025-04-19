@@ -8,6 +8,7 @@ Map* map;
 Manager manager;
 
 SDL_Renderer* Game::renderer = nullptr;
+SDL_Event Game::event;
 
 auto& player(manager.addEntity());
 
@@ -42,12 +43,12 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	map = new Map();
 
 	// ECS implementation.
-	auto& playerTransform = player.addComponent<TransformComponent>();
-	auto& playerSprite = player.addComponent<SpriteComponent>("assets/dad.png");
+	player.addComponent<TransformComponent>();
+	player.addComponent<SpriteComponent>("assets/dad.png");
+	player.addComponent<KeyboardController>();
 }
 
 void Game::handleEvents() {
-	SDL_Event event;
 	SDL_PollEvent(&event);
 
 	switch (event.type) {
@@ -63,13 +64,6 @@ void Game::handleEvents() {
 void Game::update() {
 	manager.refresh();
 	manager.update();
-
-	auto& playerTransform = player.getComponent<TransformComponent>();
-	playerTransform.position.Add(Vector2D(0, 1));
-
-	if (playerTransform.position.y > 100) {
-		player.getComponent<SpriteComponent>().setTexture("assets/car.png");
-	}
 }
 
 void Game::render() {

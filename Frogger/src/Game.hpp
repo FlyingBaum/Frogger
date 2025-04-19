@@ -20,7 +20,7 @@ public:
 	bool getIsRunning() { return isRunning; }
 
 	static SDL_Renderer* renderer;
-
+	static SDL_Event event;
 private:
 	int nCount = 0;
 	bool isRunning;

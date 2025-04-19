@@ -2,6 +2,7 @@
 #include "TextureManager.hpp"
 #include "Map.hpp"
 #include "ECS/Components.hpp"
+#include "Vector2D.hpp"
 
 Map* map;
 Manager manager;
@@ -41,7 +42,7 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	map = new Map();
 
 	// ECS implementation.
-	auto& playerPosition = player.addComponent<PositionComponent>();
+	auto& playerTransform = player.addComponent<TransformComponent>();
 	auto& playerSprite = player.addComponent<SpriteComponent>("assets/dad.png");
 }
 
@@ -62,6 +63,13 @@ void Game::handleEvents() {
 void Game::update() {
 	manager.refresh();
 	manager.update();
+
+	auto& playerTransform = player.getComponent<TransformComponent>();
+	playerTransform.position.Add(Vector2D(0, 1));
+
+	if (playerTransform.position.y > 100) {
+		player.getComponent<SpriteComponent>().setTexture("assets/car.png");
+	}
 }
 
 void Game::render() {

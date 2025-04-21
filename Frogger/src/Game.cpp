@@ -3,6 +3,7 @@
 #include "Map.hpp"
 #include "ECS/Components.hpp"
 #include "Vector2D.hpp"
+#include "Collision.hpp"
 
 Map* map;
 Manager manager;
@@ -11,6 +12,7 @@ SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 
 auto& player(manager.addEntity());
+auto& car(manager.addEntity());
 
 Game::Game() {}
 Game::~Game() {}
@@ -43,9 +45,14 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	map = new Map();
 
 	// ECS implementation.
-	player.addComponent<TransformComponent>();
+	player.addComponent<TransformComponent>(2);
 	player.addComponent<SpriteComponent>("assets/dad.png");
 	player.addComponent<KeyboardController>();
+	player.addComponent<ColliderComponent>("player");
+
+	car.addComponent<TransformComponent>(300.0f, 300.0f, 32, 32, 2);
+	car.addComponent<SpriteComponent>("assets/car.png");
+	car.addComponent<ColliderComponent>("car");
 }
 
 void Game::handleEvents() {
@@ -64,6 +71,11 @@ void Game::handleEvents() {
 void Game::update() {
 	manager.refresh();
 	manager.update();
+
+	if (Collision::AABB(player.getComponent<ColliderComponent>().collider,
+		car.getComponent<ColliderComponent>().collider)) {
+		std::cout << "Car hit!" << std::endl;
+	}
 }
 
 void Game::render() {

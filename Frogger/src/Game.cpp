@@ -2,13 +2,17 @@
 #include "TextureManager.hpp"
 #include "Map.hpp"
 #include "ECS/Components.hpp"
+#include "Vector2D.hpp"
+#include "Collision.hpp"
 
 Map* map;
 Manager manager;
 
 SDL_Renderer* Game::renderer = nullptr;
+SDL_Event Game::event;
 
 auto& player(manager.addEntity());
+auto& car(manager.addEntity());
 
 Game::Game() {}
 Game::~Game() {}
@@ -41,12 +45,17 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	map = new Map();
 
 	// ECS implementation.
-	auto& playerPosition = player.addComponent<PositionComponent>();
-	auto& playerSprite = player.addComponent<SpriteComponent>("assets/dad.png");
+	player.addComponent<TransformComponent>(2);
+	player.addComponent<SpriteComponent>("assets/dad.png");
+	player.addComponent<KeyboardController>();
+	player.addComponent<ColliderComponent>("player");
+
+	car.addComponent<TransformComponent>(300.0f, 300.0f, 32, 32, 2);
+	car.addComponent<SpriteComponent>("assets/car.png");
+	car.addComponent<ColliderComponent>("car");
 }
 
 void Game::handleEvents() {
-	SDL_Event event;
 	SDL_PollEvent(&event);
 
 	switch (event.type) {
@@ -60,8 +69,16 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
+	Vector2D playerPos = player.getComponent<TransformComponent>().position;
+
 	manager.refresh();
 	manager.update();
+
+	if (Collision::AABB(player.getComponent<ColliderComponent>().collider, car.getComponent<ColliderComponent>().collider)) {
+		player.getComponent<TransformComponent>().position = playerPos;
+		std::cout << "Collision!" << std::endl;
+	}
+
 }
 
 void Game::render() {

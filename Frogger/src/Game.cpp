@@ -69,13 +69,16 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
+	Vector2D playerPos = player.getComponent<TransformComponent>().position;
+
 	manager.refresh();
 	manager.update();
 
-	if (Collision::AABB(player.getComponent<ColliderComponent>().collider,
-		car.getComponent<ColliderComponent>().collider)) {
-		std::cout << "Car hit!" << std::endl;
+	if (Collision::AABB(player.getComponent<ColliderComponent>().collider, car.getComponent<ColliderComponent>().collider)) {
+		player.getComponent<TransformComponent>().position = playerPos;
+		std::cout << "Collision!" << std::endl;
 	}
+
 }
 
 void Game::render() {

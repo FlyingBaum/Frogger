@@ -11,8 +11,15 @@ Manager manager;
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
 
+std::vector<ColliderComponent*> Game::colliders;
+
 auto& player(manager.addEntity());
 auto& car(manager.addEntity());
+
+auto& tile0(manager.addEntity());
+auto& tile1(manager.addEntity());
+auto& tile2(manager.addEntity());
+auto& tile3(manager.addEntity());
 
 Game::Game() {}
 Game::~Game() {}
@@ -45,6 +52,12 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	map = new Map();
 
 	// ECS implementation.
+	tile0.addComponent<TileComponent>(200, 200, 32, 32, 0);
+	tile1.addComponent<TileComponent>(250, 250, 32, 32, 1);
+	tile1.addComponent<ColliderComponent>("water");
+	tile2.addComponent<TileComponent>(150, 150, 32, 32, 2);
+	tile2.addComponent<ColliderComponent>("streetTop");
+
 	player.addComponent<TransformComponent>(2);
 	player.addComponent<SpriteComponent>("assets/dad.png");
 	player.addComponent<KeyboardController>();
@@ -74,10 +87,12 @@ void Game::update() {
 	manager.refresh();
 	manager.update();
 
-	if (Collision::AABB(player.getComponent<ColliderComponent>().collider, car.getComponent<ColliderComponent>().collider)) {
+	/*if (Collision::AABB(player.getComponent<ColliderComponent>().collider, car.getComponent<ColliderComponent>().collider)) {
 		player.getComponent<TransformComponent>().position = playerPos;
 		std::cout << "Collision!" << std::endl;
-	}
+	}*/
+
+	for (auto cc : colliders) Collision::AABB(player.getComponent<ColliderComponent>(), *cc);
 
 }
 
@@ -85,7 +100,7 @@ void Game::render() {
 	SDL_RenderClear(renderer);								// Clear everything with the render color.
 
 	// Render map first, then the entities.
-	map->DrawMap();
+	//map->DrawMap();
 	manager.draw();
 	SDL_RenderPresent(renderer);							// Present all the newly rendered stuff.
 }

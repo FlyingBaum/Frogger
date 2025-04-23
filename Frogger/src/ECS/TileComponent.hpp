@@ -33,9 +33,15 @@ public:
 		case 1:
 			path = "assets/water.png";
 			break;
-		case 2: // Fall through to case 3.
+		case 2:
+			path = "assets/street.png";
+			isFlipped = true;
+			break;
 		case 3:
 			path = "assets/street.png";
+			break;
+		case 4:
+			path = "assets/street-extension.png";
 			isFlipped = true;
 			break;
 		default:

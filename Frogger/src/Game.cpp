@@ -28,6 +28,14 @@ std::vector<ColliderComponent*> Game::colliders;
 auto& player(manager.addEntity());
 auto& car(manager.addEntity());
 
+// Each member is size_t type.
+enum groupLabels : std::size_t {
+	groupMap,
+	groupPlayers,
+	groupObstacles,
+	groupColliders
+};
+
 Game::Game() {}
 Game::~Game() {}
 
@@ -61,10 +69,12 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	player.addComponent<SpriteComponent>("assets/dad.png");
 	player.addComponent<KeyboardController>();
 	player.addComponent<ColliderComponent>("player");
+	player.addGroup(groupPlayers);
 
 	car.addComponent<TransformComponent>(300.0f, 300.0f, 32, 32, 2);
 	car.addComponent<SpriteComponent>("assets/car.png");
 	car.addComponent<ColliderComponent>("car");
+	car.addGroup(groupObstacles);
 
 	Game::LoadInitialMap();
 }
@@ -91,10 +101,26 @@ void Game::update() {
 	for (auto cc : colliders) Collision::AABB(player.getComponent<ColliderComponent>(), *cc);
 }
 
+auto& tiles(manager.getGroup(groupMap));
+auto& players(manager.getGroup(groupPlayers));
+auto& obstacles(manager.getGroup(groupObstacles));
+
+// Clear everything with render color, draw and then present newly rendered stuff.
 void Game::render() {
-	SDL_RenderClear(renderer);								// Clear everything with the render color.
-	manager.draw();											// Draw and render what need to be drawn.
-	SDL_RenderPresent(renderer);							// Present all the newly drawn stuff.
+	SDL_RenderClear(renderer);
+	for(auto& t : tiles)
+	{
+		t->draw();
+	}
+	for(auto& p : players)
+	{
+		p->draw();
+	}
+	for(auto& o : obstacles)
+	{
+		o->draw();
+	}
+	SDL_RenderPresent(renderer);
 }
 
 void Game::clean() {
@@ -107,6 +133,7 @@ void Game::clean() {
 void Game::AddTile(int id, int x, int y) {
 	auto& tile(manager.addEntity());
 	tile.addComponent<TileComponent>(x, y, 32, 32, id);
+	tile.addGroup(groupMap);
 }
 
 void Game::LoadInitialMap()
@@ -118,5 +145,4 @@ void Game::LoadInitialMap()
 			type = initialMap[yIndex][xIndex];
 			Game::AddTile(type, xIndex * 64, yIndex * 64);
 		}
-
 }

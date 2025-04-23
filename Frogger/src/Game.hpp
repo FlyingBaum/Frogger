@@ -10,6 +10,12 @@ class ColliderComponent;
 
 class Game {
 public:
+	bool getIsRunning() { return isRunning; }
+
+	static SDL_Renderer* renderer;
+	static SDL_Event event;
+	static std::vector<ColliderComponent*> colliders;
+
 	Game();
 	~Game();
 
@@ -20,11 +26,8 @@ public:
 	void render();
 	void clean();
 
-	bool getIsRunning() { return isRunning; }
-
-	static SDL_Renderer* renderer;
-	static SDL_Event event;
-	static std::vector<ColliderComponent*> colliders;
+	static void AddTile(int id, int x, int y);
+	static void LoadInitialMap();
 
 private:
 	int nCount = 0;

@@ -12,15 +12,15 @@ private:
 
 public:
 	SpriteComponent() = default;
-	SpriteComponent(const char* path) {
-		setTexture(path);
+	SpriteComponent(const char* path, bool isToBeFlipped = false) {
+		setTexture(path, isToBeFlipped);
 	}
 	~SpriteComponent() {
 		SDL_DestroyTexture(texture);
 	}
 
-	void setTexture(const char* path) {
-		texture = TextureManager::LoadTexture(path);
+	void setTexture(const char* path, bool isToBeFlipped = false) {
+		texture = TextureManager::LoadTexture(path, isToBeFlipped);
 	}
 
 	void init() override {

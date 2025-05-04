@@ -66,7 +66,7 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 
 	// ECS implementation.
 	player.addComponent<TransformComponent>(2);
-	player.addComponent<SpriteComponent>("assets/dad.png");
+	player.addComponent<SpriteComponent>(true, "assets/player.png");
 	player.addComponent<KeyboardController>();
 	player.addComponent<ColliderComponent>("player");
 	player.addGroup(groupPlayers);

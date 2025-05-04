@@ -7,7 +7,7 @@
 
 class TileComponent : public Component {
 private:
-	bool isFlipped = false;
+	SDL_FlipMode tileFlipMode = SDL_FLIP_NONE;
 public:
 	TransformComponent* transform;
 	SpriteComponent* sprite;
@@ -35,14 +35,14 @@ public:
 			break;
 		case 2:
 			path = "assets/street.png";
-			isFlipped = true;
+			tileFlipMode = SDL_FLIP_VERTICAL;
 			break;
 		case 3:
 			path = "assets/street.png";
 			break;
 		case 4:
 			path = "assets/street-extension.png";
-			isFlipped = true;
+			tileFlipMode = SDL_FLIP_VERTICAL;
 			break;
 		default:
 			break;
@@ -53,7 +53,7 @@ public:
 		entity->addComponent<TransformComponent>(tileRect.x, tileRect.y, tileRect.w, tileRect.h, 2);
 		transform = &entity->getComponent<TransformComponent>();
 
-		entity->addComponent<SpriteComponent>(path, isFlipped);
+		entity->addComponent<SpriteComponent>(path, tileFlipMode);
 		sprite = &entity->getComponent<SpriteComponent>();
 	}
 };

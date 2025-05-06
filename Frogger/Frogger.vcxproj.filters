@@ -101,5 +101,8 @@
     <Image Include="assets\water.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\street-extension.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -51,6 +51,7 @@
     <Image Include="assets\dad.png" />
     <Image Include="assets\grass.png" />
     <Image Include="assets\player.png" />
+    <Image Include="assets\street-extension.png" />
     <Image Include="assets\street.png" />
     <Image Include="assets\water.png" />
   </ItemGroup>

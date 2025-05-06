@@ -13,6 +13,7 @@ private:
 	SDL_FRect srcRect, destRect;
 
 	bool isAnimated = false;
+	bool isTile = false;
 	int frames = 0;
 	int speed = 100; // Delay between frames in ms.
 
@@ -24,7 +25,8 @@ public:
 
 	SpriteComponent() = default;
 
-	SpriteComponent(const char* path, SDL_FlipMode flipMode = SDL_FLIP_NONE) {
+	SpriteComponent(const char* path, SDL_FlipMode flipMode = SDL_FLIP_NONE, const bool isTile = false) {
+		this->isTile = isTile;
 		spriteFlipMode = flipMode;
 		setTexture(path);
 	}
@@ -88,7 +90,7 @@ public:
 	}
 
 	void draw() override {
-		TextureManager::Draw(texture, srcRect, destRect, spriteFlipMode);
+		TextureManager::Draw(texture, srcRect, destRect, !isTile ? spriteFlipMode: SDL_FLIP_NONE);
 	}
 
 	void Play(const char* animationName) {

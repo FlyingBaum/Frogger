@@ -53,7 +53,7 @@ public:
 		entity->addComponent<TransformComponent>(tileRect.x, tileRect.y, tileRect.w, tileRect.h, 2);
 		transform = &entity->getComponent<TransformComponent>();
 
-		entity->addComponent<SpriteComponent>(path, tileFlipMode);
+		entity->addComponent<SpriteComponent>(path, tileFlipMode, true);
 		sprite = &entity->getComponent<SpriteComponent>();
 	}
 };

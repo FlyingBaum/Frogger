@@ -22,7 +22,6 @@
     <ClCompile Include="src\Collision.cpp" />
     <ClCompile Include="src\ECS\ECS.cpp" />
     <ClCompile Include="src\Game.cpp" />
-    <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\TextureManager.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
@@ -38,7 +37,6 @@
     <ClInclude Include="src\ECS\TransformComponent.hpp" />
     <ClInclude Include="src\ECS\SpriteComponent.hpp" />
     <ClInclude Include="src\Game.hpp" />
-    <ClInclude Include="src\GameObject.hpp" />
     <ClInclude Include="src\TextureManager.hpp" />
     <ClInclude Include="src\Vector2D.hpp" />
   </ItemGroup>

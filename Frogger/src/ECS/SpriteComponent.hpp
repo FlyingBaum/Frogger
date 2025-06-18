@@ -14,8 +14,11 @@ private:
 
     bool isAnimated = false;
     bool isTile = false;
+
+    int currentFrame = 0;
     int frames = 0;
     int speed = 200; // Delay between frames in ms.
+    Uint32 lastFrameTime = 0;
 
     bool shouldPlayOnce = false;
     bool isAnimationCompleted = false;
@@ -81,14 +84,21 @@ public:
 
     void update() override {
         if (shouldSwitchToIdle) SwitchToIdle();
-        
-        if (isAnimated && !isAnimationCompleted) {
-            int currentFrame = (SDL_GetTicks() / speed) % frames;
-            srcRect.x = static_cast<int>(srcRect.w) * currentFrame;
-            if (shouldPlayOnce && currentFrame == frames - 1) {
-                isAnimationCompleted = true;
-                shouldSwitchToIdle = true;
+
+        if (!isAnimationCompleted) {
+            Uint32 now = SDL_GetTicks();
+            if (now - lastFrameTime > speed) {
+                lastFrameTime = now;
+                currentFrame++;
+                if (currentFrame >= frames) {
+                    currentFrame = 0;
+                    if (shouldPlayOnce) {
+                        isAnimationCompleted = true;
+                        shouldSwitchToIdle = true;
+                    }
+                }
             }
+            srcRect.x = currentFrame * srcRect.w;
         }
 
         // Get the correct y for the spritesheet if the animationIndex has changed.
@@ -98,7 +108,6 @@ public:
         destRect.y = static_cast<int>(transform->position.y);
         destRect.w = transform->width * transform->scale;
         destRect.h = transform->height * transform->scale;
-
     }
 
     void draw() override {
@@ -109,6 +118,7 @@ public:
         frames = animations[animationName].frames;
         animationIndex = animations[animationName].index;
         speed = animations[animationName].speed;
+        currentFrame = 0;  // Reset the frame to start from the beginning
 
         this->shouldPlayOnce = shouldPlayOnce;
         this->isAnimationCompleted = false;

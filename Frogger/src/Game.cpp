@@ -65,7 +65,7 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	}
 
 	// ECS implementation.
-	player.addComponent<TransformComponent>(2);
+	player.addComponent<TransformComponent>(2, true);
 	player.addComponent<SpriteComponent>(true, "assets/player.png");
 	player.addComponent<KeyboardController>();
 	player.addComponent<ColliderComponent>("player");
@@ -93,8 +93,6 @@ void Game::handleEvents() {
 }
 
 void Game::update() {
-	Vector2D playerPos = player.getComponent<TransformComponent>().position;
-
 	manager.refresh();
 	manager.update();
 

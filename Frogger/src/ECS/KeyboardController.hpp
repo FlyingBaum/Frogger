@@ -15,50 +15,32 @@ public:
 	}
 
 	void update() override {
+		if (transform->isPlayerMoving) return; // If player has not reached target location then do not process input.
+
 		if (Game::event.type == SDL_EVENT_KEY_DOWN) {
 			switch (Game::event.key.key)
 			{
 			case SDLK_W:
 				transform->velocity.y = -1;
-				sprite->Play("JumpingNorth");
+				transform->setPlayerInMotion();
+				sprite->Play("JumpingNorth", true);
 				break;
 			case SDLK_S:
 				transform->velocity.y = 1;
-				sprite->Play("JumpingSouth");
+				transform->setPlayerInMotion();
+				sprite->Play("JumpingSouth", true);
 				break;
 			case SDLK_A:
 				transform->velocity.x = -1;
-				sprite->Play("JumpingWest");
+				transform->setPlayerInMotion();
+				sprite->Play("JumpingWest", true);
 				sprite->spriteFlipMode = SDL_FLIP_HORIZONTAL;
 				break;
 			case SDLK_D:
 				transform->velocity.x = 1;
-				sprite->Play("JumpingEast");
+				transform->setPlayerInMotion();
+				sprite->Play("JumpingEast", true);
 				sprite->spriteFlipMode = SDL_FLIP_NONE;
-				break;
-			default:
-				break;
-			}
-		}
-
-		if (Game::event.type == SDL_EVENT_KEY_UP) {
-			switch (Game::event.key.key)
-			{
-			case SDLK_W:
-				transform->velocity.y = 0;
-				sprite->Play("IdleNorth");
-				break;
-			case SDLK_S:
-				transform->velocity.y = 0;
-				sprite->Play("IdleSouth");
-				break;
-			case SDLK_A:
-				transform->velocity.x = 0;
-				sprite->Play("IdleWest");
-				break;
-			case SDLK_D:
-				transform->velocity.x = 0;
-				sprite->Play("IdleEast");
 				break;
 			default:
 				break;

@@ -18,7 +18,8 @@ public:
 	int width = 32;
 	int scale = 1;
 
-	int speed = 2;
+	int speed = 4; // Only use even numbers.
+	int closeTargetDistance = 20;
 
 	TransformComponent() {
 		position.Zero();
@@ -76,5 +77,10 @@ public:
 
 		targetLocation.x += velocity.x * JUMP_DISTANCE;
 		targetLocation.y += velocity.y * JUMP_DISTANCE;
+	}
+
+	bool isPlayerCloseToTarget() const {
+		return std::abs(targetLocation.x - position.x) <= closeTargetDistance && 
+			std::abs(targetLocation.y - position.y) <= closeTargetDistance;
 	}
 };

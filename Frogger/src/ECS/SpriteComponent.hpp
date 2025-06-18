@@ -8,94 +8,129 @@
 
 class SpriteComponent : public Component {
 private:
-	TransformComponent* transform;
-	SDL_Texture* texture;
-	SDL_FRect srcRect, destRect;
+    TransformComponent* transform;
+    SDL_Texture* texture;
+    SDL_FRect srcRect, destRect;
 
-	bool isAnimated = false;
-	bool isTile = false;
-	int frames = 0;
-	int speed = 100; // Delay between frames in ms.
+    bool isAnimated = false;
+    bool isTile = false;
+    int frames = 0;
+    int speed = 200; // Delay between frames in ms.
+
+    bool shouldPlayOnce = false;
+    bool isAnimationCompleted = false;
+    bool shouldSwitchToIdle = false;
 
 public:
-	int animationIndex = 0;
-	std::map<const char*, Animation> animations;
+    int animationIndex = 0;
+    std::map<const char*, Animation> animations;
 
-	SDL_FlipMode spriteFlipMode = SDL_FLIP_NONE;
+    SDL_FlipMode spriteFlipMode = SDL_FLIP_NONE;
 
-	SpriteComponent() = default;
+    SpriteComponent() = default;
 
-	SpriteComponent(const char* path, SDL_FlipMode flipMode = SDL_FLIP_NONE, const bool isTile = false) {
-		this->isTile = isTile;
-		spriteFlipMode = flipMode;
-		setTexture(path);
-	}
+    SpriteComponent(const char* path, SDL_FlipMode flipMode = SDL_FLIP_NONE, const bool isTile = false) {
+        this->isTile = isTile;
+        spriteFlipMode = flipMode;
+        setTexture(path);
+    }
 
-	SpriteComponent(bool isAnimated, const char* path, SDL_FlipMode flipMode = SDL_FLIP_NONE) {
-		spriteFlipMode = flipMode;
-		this->isAnimated = isAnimated;
+    SpriteComponent(bool isAnimated, const char* path, SDL_FlipMode flipMode = SDL_FLIP_NONE) {
+        spriteFlipMode = flipMode;
+        this->isAnimated = isAnimated;
 
-		// Create a list of animations with their respective keys.
-		std::vector<std::pair<const char*, Animation>> animationList = {
-			{"IdleSouth", Animation(0, 2, 500)},
-			{"JumpingSouth", Animation(1, 3, 400)},
-			{"IdleNorth", Animation(2, 2, 500)},
-			{"JumpingNorth", Animation(3, 3, 400)},
-			{"IdleEast", Animation(4, 2, 500)},
-			{"JumpingEast", Animation(5, 3, 400)},
-			{"IdleWest", Animation(4, 2, 500)},
-			{"JumpingWest", Animation(5, 3, 400)}
-		};
-		// Emplace all animations into the map.
-		for (const auto& animPair : animationList) {
-			animations.emplace(animPair);
-		}
+        // Create a list of animations with their respective keys.
+        std::vector<std::pair<const char*, Animation>> animationList = {
+            {"IdleSouth", Animation(0, 2, 500)},
+            {"JumpingSouth", Animation(1, 3, 200)},
+            {"IdleNorth", Animation(2, 2, 500)},
+            {"JumpingNorth", Animation(3, 3, 200)},
+            {"IdleEast", Animation(4, 2, 500)},
+            {"JumpingEast", Animation(5, 3, 200)},
+            {"IdleWest", Animation(4, 2, 500)},
+            {"JumpingWest", Animation(5, 3, 200)}
+        };
+        // Emplace all animations into the map.
+        for (const auto& animPair : animationList) {
+            animations.emplace(animPair);
+        }
 
-		Play("IdleSouth");
+        Play("IdleSouth");
 
-		setTexture(path);
-	}
+        setTexture(path);
+    }
 
-	~SpriteComponent() {
-		SDL_DestroyTexture(texture);
-	}
+    ~SpriteComponent() {
+        SDL_DestroyTexture(texture);
+    }
 
-	void setTexture(const char* path) {
-		texture = TextureManager::LoadTexture(path, spriteFlipMode);
-	}
+    void setTexture(const char* path) {
+        texture = TextureManager::LoadTexture(path, spriteFlipMode);
+    }
 
-	void init() override {
-		if (!entity->hasComponent<TransformComponent>()) {
-			entity->addComponent<TransformComponent>();
-		}
-		transform = &entity->getComponent<TransformComponent>();
+    void init() override {
+        if (!entity->hasComponent<TransformComponent>()) {
+            entity->addComponent<TransformComponent>();
+        }
+        transform = &entity->getComponent<TransformComponent>();
 
-		srcRect.x = srcRect.y = 0;
-		srcRect.w = transform->width;
-		srcRect.h = transform->height;
-	}
+        srcRect.x = srcRect.y = 0;
+        srcRect.w = transform->width;
+        srcRect.h = transform->height;
+    }
 
-	void update() override {
-		if (isAnimated) {
-			int currentFrame = (SDL_GetTicks() / speed) % frames;
-			srcRect.x = static_cast<int>(srcRect.w) * currentFrame;
-		}
-		// Get the correct y for the spritesheet if the animationIndex has changed.
-		srcRect.y = animationIndex * transform->height;
+    void update() override {
+        if (shouldSwitchToIdle) SwitchToIdle();
+        
+        if (isAnimated && !isAnimationCompleted) {
+            int currentFrame = (SDL_GetTicks() / speed) % frames;
+            srcRect.x = static_cast<int>(srcRect.w) * currentFrame;
+            if (shouldPlayOnce && currentFrame == frames - 1) {
+                isAnimationCompleted = true;
+                shouldSwitchToIdle = true;
+            }
+        }
 
-		destRect.x = static_cast<int>(transform->position.x);
-		destRect.y = static_cast<int>(transform->position.y);
-		destRect.w = transform->width * transform->scale;
-		destRect.h = transform->height * transform->scale;
-	}
+        // Get the correct y for the spritesheet if the animationIndex has changed.
+        srcRect.y = animationIndex * transform->height;
 
-	void draw() override {
-		TextureManager::Draw(texture, srcRect, destRect, !isTile ? spriteFlipMode: SDL_FLIP_NONE);
-	}
+        destRect.x = static_cast<int>(transform->position.x);
+        destRect.y = static_cast<int>(transform->position.y);
+        destRect.w = transform->width * transform->scale;
+        destRect.h = transform->height * transform->scale;
 
-	void Play(const char* animationName) {
-		frames = animations[animationName].frames;
-		animationIndex = animations[animationName].index;
-		speed = animations[animationName].speed;
-	}
+    }
+
+    void draw() override {
+        TextureManager::Draw(texture, srcRect, destRect, !isTile ? spriteFlipMode : SDL_FLIP_NONE);
+    }
+
+    void Play(const char* animationName, bool shouldPlayOnce = false) {
+        frames = animations[animationName].frames;
+        animationIndex = animations[animationName].index;
+        speed = animations[animationName].speed;
+
+        this->shouldPlayOnce = shouldPlayOnce;
+        this->isAnimationCompleted = false;
+    }
+
+    void SwitchToIdle() {
+        switch (animationIndex) {
+        case 1:
+            Play("IdleSouth");
+            break;
+        case 3:
+            Play("IdleNorth");
+            break;
+        case 5:
+            Play("IdleEast");
+            break;
+        case 7:
+            Play("IdleWest");
+            break;
+        default:
+            break;
+        }
+        shouldSwitchToIdle = false;
+    }
 };

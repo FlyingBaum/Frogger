@@ -64,14 +64,21 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 		isRunning = false;
 	}
 
+	int scale = 2;
+	int isPlayerTransform = true;
+	float carX = 300.0f;
+	float carY = 300.0f;
+	int carHeight = 32;
+	int carWidth = 32;
+
 	// ECS implementation.
-	player.addComponent<TransformComponent>(2, true);
+	player.addComponent<TransformComponent>(scale, isPlayerTransform);
 	player.addComponent<SpriteComponent>(true, "assets/player.png");
 	player.addComponent<KeyboardController>();
 	player.addComponent<ColliderComponent>("player");
 	player.addGroup(groupPlayers);
 
-	car.addComponent<TransformComponent>(300.0f, 300.0f, 32, 32, 2);
+	car.addComponent<TransformComponent>(carX, carY, carHeight, carWidth, scale);
 	car.addComponent<SpriteComponent>("assets/car.png");
 	car.addComponent<ColliderComponent>("car");
 	car.addGroup(groupObstacles);
@@ -96,7 +103,12 @@ void Game::update() {
 	manager.refresh();
 	manager.update();
 
-	for (auto cc : colliders) Collision::AABB(player.getComponent<ColliderComponent>(), *cc);
+	for (auto cc : colliders) isRunning = !Collision::AABB(player.getComponent<ColliderComponent>(), *cc); // Stop game on collision.
+
+	if (!isRunning) {
+		auto& playerSpriteComponent = player.getComponent<SpriteComponent>();
+		// Play death animation.
+	}
 }
 
 auto& tiles(manager.getGroup(groupMap));

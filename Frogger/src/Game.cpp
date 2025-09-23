@@ -70,17 +70,21 @@ void Game::init(const char* title, int width, int height, bool isFullscreen) {
 	float carY = 300.0f;
 	int carHeight = 32;
 	int carWidth = 32;
+	int playerHurtboxWidth = 10;
+	int playerHurtboxHeight = 28;
+	int carHitboxWidth = 30;
+	int carHitboxHeight = 16;
 
 	// ECS implementation.
 	player.addComponent<TransformComponent>(scale, isPlayerTransform);
 	player.addComponent<SpriteComponent>(true, "assets/player.png");
 	player.addComponent<KeyboardController>();
-	player.addComponent<ColliderComponent>("player");
+	player.addComponent<ColliderComponent>("player", playerHurtboxWidth, playerHurtboxHeight);
 	player.addGroup(groupPlayers);
 
 	car.addComponent<TransformComponent>(carX, carY, carHeight, carWidth, scale);
 	car.addComponent<SpriteComponent>("assets/car.png");
-	car.addComponent<ColliderComponent>("car");
+	car.addComponent<ColliderComponent>("car", carHitboxWidth, carHitboxHeight);
 	car.addGroup(groupObstacles);
 
 	Game::LoadInitialMap();

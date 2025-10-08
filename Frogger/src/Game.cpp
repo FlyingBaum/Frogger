@@ -5,7 +5,6 @@
 #include "Collision.hpp"
 #include "ECS/TileComponent.hpp"
 #include <ctime>
-
 const int GAME_SCALE = 2;
 const int GRID_WIDTH = 10;
 const int GRID_HEIGHT = 10;
@@ -99,7 +98,7 @@ void Game::handleEvents() {
 		break;
 	}
 
-	// If game over, check for SPACE to reset
+	// If game over, check for SPACE to reset.
 	if (isGameOver && event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_SPACE) {
 		ResetGame();
 		isGameOver = false;
@@ -109,14 +108,15 @@ void Game::handleEvents() {
 
 void Game::update() {
 	manager.refresh();
+
+	if (!isGameOver) {
 	manager.update();
 
 	auto& playerCollider = player->getComponent<ColliderComponent>();
-
-	if (!isGameOver) {  // only check collisions if game is running
 		for (auto cc : colliders) {
 			if (cc->tag == "car" && Collision::AABB(playerCollider, *cc)) {
 				std::cout << "Player hit by car!" << std::endl;
+				std::cout << "Hit space to continue!" << std::endl;
 				isGameOver = true;
 				break;
 			}
@@ -128,44 +128,44 @@ auto& tiles(manager.getGroup(groupMap));
 auto& players(manager.getGroup(groupPlayers));
 auto& obstacles(manager.getGroup(groupObstacles));
 
-// Clear everything with render color, draw and then present newly rendered stuff.
 void Game::render() {
 	SDL_RenderClear(renderer);
-	for(auto& t : tiles)
-	{
+
+	for (auto& t : tiles) {
 		t->draw();
 	}
-	for(auto& p : players)
-	{
+	for (auto& p : players) {
 		p->draw();
 	}
-	for(auto& o : obstacles)
-	{
+	for (auto& o : obstacles) {
 		o->draw();
 	}
+
 	if (isGameOver) {
-		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 150); // translucent dark overlay
-		SDL_FRect overlay = { 0, 0, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT };
-		SDL_RenderFillRect(renderer, &overlay);
-
-		// Simple text rendering (no TTF used, just debug-style)
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-		SDL_FRect box = { SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 25, 200, 50 };
-		SDL_RenderRect(renderer, &box);
-		// If you have SDL_ttf available, you can render real text.
-		// Otherwise this placeholder box gives a visual cue.
-
-		// TODO (optional): use SDL_ttf to render "Try again? Press SPACE"
+		RenderGameOverScreen();
 	}
+
 	SDL_RenderPresent(renderer);
 }
+
+
 
 void Game::clean() {
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
 	std::cout << "Game Cleaned" << std::endl;
+}
+
+void Game::RenderGameOverScreen() {
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 150);
+	SDL_FRect overlay = { 0, 0, (float)SCREEN_WIDTH, (float)SCREEN_HEIGHT };
+	SDL_RenderFillRect(renderer, &overlay);
+
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+	SDL_FRect box = { SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 25, 200, 50 };
+	SDL_RenderRect(renderer, &box);
 }
 
 void Game::AddTile(int id, int x, int y) {

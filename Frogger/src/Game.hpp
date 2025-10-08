@@ -34,6 +34,7 @@ public:
 	static void SpawnCarInLane(int yIndex, int dir);
 	void ResetGame();
 	void PositionPlayerAtStart();
+	void RenderGameOverScreen();
 
 private:
 	int nCount = 0;

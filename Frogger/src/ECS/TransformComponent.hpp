@@ -83,4 +83,18 @@ public:
 		return std::abs(targetLocation.x - position.x) <= closeTargetDistance && 
 			std::abs(targetLocation.y - position.y) <= closeTargetDistance;
 	}
+
+	// Resets player position to middle bottom tile.
+	void resetPlayerPositionToStart(int tileSize, int gridWidth, int gridHeight) {
+		int startTileX = gridWidth / 2;
+		int startTileY = gridHeight - 1;
+
+		position.x = startTileX * tileSize;
+		position.y = startTileY * tileSize;
+
+		velocity.Zero();
+		isPlayerMoving = false;
+		targetLocation = position;
+	}
+
 };

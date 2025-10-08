@@ -29,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="src\Collision.hpp" />
     <ClInclude Include="src\ECS\Animation.hpp" />
+    <ClInclude Include="src\ECS\CarComponent.hpp" />
     <ClInclude Include="src\ECS\ColliderComponent.hpp" />
     <ClInclude Include="src\ECS\Components.hpp" />
     <ClInclude Include="src\ECS\ECS.hpp" />

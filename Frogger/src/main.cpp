@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
 
 	game = new Game();
 
-	game->init("FroggerEngine", 640, 640, false);
+	game->init("FroggerEngine", game->getScreenWidth(), game->getScreenHeight(), false);
 
 	while (game->getIsRunning()) {
 		frameStart = SDL_GetTicks();
